@@ -127,10 +127,6 @@ class SimpleCNN(nn.Module):
 
 # model = SimpleCNN().to(device)
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
 class BasicBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1, downsample=None):
         super(BasicBlock, self).__init__()
