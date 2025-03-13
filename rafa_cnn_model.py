@@ -5,11 +5,9 @@ import torch.nn.functional as F
 import numpy as np
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-
 import os
 import zipfile
 import requests
-# print(torch.backends.mps.is_available())  # Should return True if using M1/M2/M3
 
 # URL of the dataset
 url = "https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip"
@@ -54,13 +52,7 @@ print('total training dog images:', len(os.listdir(train_dogs_dir)))
 print('total validation cat images:', len(os.listdir(validation_cats_dir)))
 print('total validation dog images:', len(os.listdir(validation_dogs_dir)))
 
-# seed value
-seed = 12
-
-# Set fixed seed
-torch.manual_seed(seed)
-
-# Set device
+# Device configuration
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 # Define CNN Model
@@ -136,10 +128,9 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
+train_dataset = datasets.ImageFolder(train_dir, transform=transform)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
-# Load datasets
-train_data = datasets.ImageFolder(train_dir, transform=transform)
-train_loader = DataLoader(train_data, batch_size=32, shuffle=True, worker_init_fn=np.random.seed(seed))
 
 # Loss function & Optimizer
 criterion = nn.CrossEntropyLoss()
@@ -182,8 +173,8 @@ for epoch in range(epochs):
     
     print(f"Epoch {epoch+1} Completed - Avg Loss: {avg_train_loss:.4f}, Training Accuracy: {epoch_acc:.2f}%")
 
-validation_data = datasets.ImageFolder(validation_dir, transform=transform)
-validation_loader = DataLoader(validation_data, batch_size=32, shuffle=False, worker_init_fn=np.random.seed(seed))
+validation_dataset = datasets.ImageFolder(validation_dir, transform=transform)
+validation_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
 # Validation Phase
 model.eval()
